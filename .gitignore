@@ -1,0 +1,6 @@
+# Executables
+ircserv
+
+# Object files
+*.o
+*.a
