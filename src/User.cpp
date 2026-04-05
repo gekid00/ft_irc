@@ -31,6 +31,8 @@ void    Server::handleUser(int fd, const std::vector<std::string>& params)
     }
     std::string username = params[0];
     std::string realname = params[3];
+    if (!realname.empty() && realname[0] == ':')
+        realname = realname.substr(1);
     _clients[fd].setUsername(username);
     _clients[fd].setRealname(realname);
     if (_clients[fd].tryRegister())

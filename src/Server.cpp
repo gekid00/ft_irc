@@ -223,17 +223,24 @@ void    Server::readData(int fd)
             return;
         }
 
-        while (_clients[fd].hasLine())
+        while (hasClient(fd) && _clients[fd].hasLine())
             handleCommand(fd, _clients[fd].extractLine());
     }
 }
 
 void    Server::cleanupClient(int fd)
 {
-    // Retirer de tous les channels
+    // Retirer de tous les channels et supprimer les channels vides
+    std::vector<std::string> toRemove;
     for (std::map<std::string, Channel>::iterator it = _channels.begin(); it != _channels.end(); ++it)
+    {
         it->second.removeMember(fd);
-    
+        if (it->second.getNumberOfMembers() == 0)
+            toRemove.push_back(it->first);
+    }
+    for (size_t i = 0; i < toRemove.size(); i++)
+        _channels.erase(toRemove[i]);
+
     close(fd);
     _clients.erase(fd);
 }
@@ -277,6 +284,8 @@ void Server::handleCommand(int fd, const std::string& line)
             handleInvite(fd, params);
         else if (command == "MODE")
             handleMode(fd, params);
+        else if (command == "PART")
+            handlePart(fd, params);
         else if (command == "QUIT")
             handleQuit(fd, params);
     }

@@ -24,7 +24,8 @@ SRCS = main.cpp \
 		Kick.cpp \
 		Invite.cpp \
 		Mode.cpp \
-		Quit.cpp
+		Quit.cpp \
+		Part.cpp
 SRCS_PATH = ./src/
 
 OBJS = ${patsubst %.cpp, ${OBJS_PATH}/%.o, ${SRCS}}

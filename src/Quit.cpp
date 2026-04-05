@@ -21,11 +21,20 @@ void    Server::handleQuit(int fd, const std::vector<std::string>& params)
         if (message[0] == ':')
             message = message.substr(1);
     }
-    
-    // Envoyer le message de départ
-    std::string quitMsg = "ERROR :Client quit\r\n";
-    sendToClient(fd, quitMsg);
-    
+
+    std::string prefix = _clients[fd].getPrefix();
+    std::string quitBroadcast = ":" + prefix + " QUIT :" + message + "\r\n";
+
+    // Broadcaster le QUIT à tous les membres des channels du client
+    for (std::map<std::string, Channel>::iterator it = _channels.begin(); it != _channels.end(); ++it)
+    {
+        if (it->second.isMember(fd))
+            it->second.broadcastMessage(quitBroadcast, fd);
+    }
+
+    // Envoyer ERROR au client qui quitte
+    sendToClient(fd, "ERROR :Closing link\r\n");
+
     // Fermer proprement le client
     cleanupClient(fd);
     for (size_t i = 0; i < _pollfds.size(); ++i)

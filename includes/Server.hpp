@@ -79,6 +79,7 @@ class Server
         Channel*            findChannel(const std::string& name);
         int                 getClientFdByNickname(const std::string& nickname);
         void                handleQuit(int fd, const std::vector<std::string>& params);
+        void                handlePart(int fd, const std::vector<std::string>& params);
         static void         setupSignals();
         static void         signalHandler(int num);
 };
