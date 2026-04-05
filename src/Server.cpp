@@ -191,7 +191,7 @@ void    Server::readData(int fd)
     char buf[512];
 
     ssize_t bytes = recv(fd, buf, sizeof(buf), 0);
-    if (bytes == 0 || (bytes < 0 && errno != EAGAIN && errno != EWOULDBLOCK))
+    if (bytes <= 0)
     {
         cleanupClient(fd);
         for (size_t i = 0; i < _pollfds.size(); ++i)
