@@ -36,8 +36,34 @@ void    Server::handleNick(int fd, const std::vector<std::string>& params)
             return ;
         }
     }
+    // Si déjà enregistré, broadcaster le changement de nick aux channels
+    if (_clients[fd].isRegistered())
+    {
+        std::string oldPrefix = _clients[fd].getPrefix();
+        _clients[fd].setNickname(nickname);
+        std::string nickMsg = ":" + oldPrefix + " NICK " + nickname + "\r\n";
+        // Envoyer à soi-même
+        sendToClient(fd, nickMsg);
+        // Broadcaster aux membres des channels communs (une seule fois par fd)
+        std::set<int> notified;
+        notified.insert(fd);
+        for (std::map<std::string, Channel>::iterator it = _channels.begin(); it != _channels.end(); ++it)
+        {
+            if (!it->second.isMember(fd))
+                continue;
+            const std::set<int>& members = it->second.getMembers();
+            for (std::set<int>::const_iterator m = members.begin(); m != members.end(); ++m)
+            {
+                if (notified.find(*m) == notified.end())
+                {
+                    sendToClient(*m, nickMsg);
+                    notified.insert(*m);
+                }
+            }
+        }
+        return ;
+    }
     _clients[fd].setNickname(nickname);
     if (_clients[fd].tryRegister())
         sendToClient(fd, rpl_welcome(nickname));
-    
 }

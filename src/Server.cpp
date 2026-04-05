@@ -44,7 +44,12 @@ Server::Server(const std::string& port, const std::string& password) : _password
 }
 
 Server::~Server()
-{}
+{
+    for (size_t i = 0; i < _pollfds.size(); i++)
+        close(_pollfds[i].fd);
+    _clients.clear();
+    _channels.clear();
+}
 
 /*
 setupSocket: creation de la socket d'ecoute, le socket est un fd donc close en cas d'erreur
@@ -133,7 +138,14 @@ void    Server::pollMonitoring()
             if (_pollfds[i].fd == _listenSocket && _pollfds[i].revents & POLLIN)
                 addClient();
             else if (_pollfds[i].fd != _listenSocket && _pollfds[i].revents & POLLIN)
-                readData(_pollfds[i].fd);
+            {
+                int fd = _pollfds[i].fd;
+                size_t prevSize = _pollfds.size();
+                readData(fd);
+                // Si readData a supprimé ce fd de _pollfds, ajuster l'index
+                if (_pollfds.size() < prevSize)
+                    i--;
+            }
             else if (_pollfds[i].fd != _listenSocket && _pollfds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
             {
                 cleanupClient(_pollfds[i].fd);
@@ -152,8 +164,9 @@ fonction d'ajout de nouveaux clients au serveur
 */
 void    Server::addClient()
 {
-    socklen_t len = sizeof _serverAddr;
-    int clientFd = accept(_listenSocket, (sockaddr*)&_serverAddr, &len);
+    sockaddr_in clientAddr;
+    socklen_t len = sizeof(clientAddr);
+    int clientFd = accept(_listenSocket, (sockaddr*)&clientAddr, &len);
 
     if (clientFd < 0)
     {
