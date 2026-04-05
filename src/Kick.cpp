@@ -112,14 +112,18 @@ void Kick::executeKick()
 	channel.removeMember(targetFd);
 	
 	// Construire le message KICK au format IRC
-	std::string message = ":" + getNickname() + " KICK " + _channel + " " + _target;
+	std::string message = ":" + _server.getClient(_fd).getPrefix() + " KICK " + _channel + " " + _target;
 	if (!_reason.empty())
 		message += " :" + _reason;
 	message += "\r\n";
-	
-	// Broadcaster le KICK à tous les membres du channel (y compris le kicked)
-	channel.broadcastMessage(message, -1);
-	
-	// Envoyer aussi au target qu'il a été kické
+
+	// Envoyer au target qu'il a été kické
 	_server.sendToClient(targetFd, message);
+
+	// Broadcaster le KICK aux membres restants
+	channel.broadcastMessage(message, -1);
+
+	// Supprimer le channel s'il est vide
+	if (channel.getNumberOfMembers() == 0)
+		_server.removeChannel(_channel);
 }

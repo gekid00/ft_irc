@@ -36,5 +36,5 @@ void    Server::handleUser(int fd, const std::vector<std::string>& params)
     _clients[fd].setUsername(username);
     _clients[fd].setRealname(realname);
     if (_clients[fd].tryRegister())
-        sendToClient(fd, rpl_welcome(_clients[fd].getNickname()));
+        sendToClient(fd, rpl_welcome(_clients[fd].getNickname(), _clients[fd].getPrefix()));
 }

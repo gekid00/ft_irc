@@ -109,7 +109,7 @@ void Privmsg::sendToTarget()
 	{
 		Channel& channel = _server.getChannel(_target);
 		// Construire le message au format IRC
-		std::string fullMessage = ":" + getNickname() + " PRIVMSG " + _target + " :" + _message + "\r\n";
+		std::string fullMessage = ":" + _server.getClient(_fd).getPrefix() + " PRIVMSG " + _target + " :" + _message + "\r\n";
 		// Envoyer à tous les membres sauf l'envoyeur
 		channel.broadcastMessage(fullMessage, _fd);
 	}
@@ -123,7 +123,7 @@ void Privmsg::sendToTarget()
 			return;
 		}
 		// Construire le message au format IRC
-		std::string fullMessage = ":" + getNickname() + " PRIVMSG " + _target + " :" + _message + "\r\n";
+		std::string fullMessage = ":" + _server.getClient(_fd).getPrefix() + " PRIVMSG " + _target + " :" + _message + "\r\n";
 		// Envoyer au user cible
 		_server.sendToClient(targetFd, fullMessage);
 	}

@@ -61,6 +61,7 @@ class Server
         Server(const std::string& port, const std::string& password);
         ~Server();
         void                addChannel(std::string channelName);
+        void                removeChannel(const std::string& channelName);
         void                pollMonitoring();
         void                handleCommand(int fd, const std::string& line);
         void                handlePass(int fd, const std::vector<std::string>& params);

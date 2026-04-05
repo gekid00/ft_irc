@@ -92,6 +92,6 @@ void Topic::setTopic()
 	// Envoyer confirmation au client
 	_server.sendToClient(_fd, rpl_topic(getNickname(), _channel, newTopic));
 	// Broadcaster le changement aux autres membres
-	std::string message = ":" + getNickname() + " TOPIC " + _channel + " :" + newTopic + "\r\n";
+	std::string message = ":" + _server.getClient(_fd).getPrefix() + " TOPIC " + _channel + " :" + newTopic + "\r\n";
 	channel.broadcastMessage(message, _fd);
 }

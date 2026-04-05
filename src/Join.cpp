@@ -131,6 +131,8 @@ void Join::sendJoinResponse(const std::string& name)
 		names_list += _server.getClient(memberFd).getNickname();
 	}
 	
+	if (!channel.getTopic().empty())
+		_server.sendToClient(_fd, rpl_topic(getNickname(), name, channel.getTopic()));
 	_server.sendToClient(_fd, rpl_namreply(getNickname(), name, names_list));
 	_server.sendToClient(_fd, rpl_endofnames(getNickname(), name));
 }

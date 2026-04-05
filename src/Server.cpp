@@ -37,7 +37,7 @@ void Server::signalHandler(int num)
 Server::Server(const std::string& port, const std::string& password) : _password(password)
 {
     _port = std::atoi(port.c_str());
-    if (_port <= 1024 || _port >= 65535)
+    if (_port <= 1024 || _port > 65535)
         throw std::invalid_argument("port is not between 1024 and 65535");
     setupSocket(_port);
     
@@ -68,10 +68,7 @@ void    Server::setupSocket(int port)
     _listenSocket = socket(AF_INET, SOCK_STREAM, 0);
 
     if (_listenSocket < 0)
-    {
-        close(_listenSocket);
         throw std::invalid_argument("unable to create socket");
-    }
 
     int opt = 1;
     if (setsockopt(_listenSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
@@ -376,6 +373,11 @@ void Server::handleInvite(int fd, const std::vector<std::string>& params)
 void    Server::addChannel(std::string channelName)
 {
     _channels.insert(std::make_pair(channelName, Channel(channelName)));
+}
+
+void    Server::removeChannel(const std::string& channelName)
+{
+    _channels.erase(channelName);
 }
 
 // CommandResponse handleCommand(int fd, const std::string& line)

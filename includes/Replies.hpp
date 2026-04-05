@@ -86,8 +86,8 @@
 
 // ---- RPL ----
 
-inline std::string rpl_welcome(const std::string& nick) {
-	return ":server 001 " + nick + " :Welcome to the IRC server\r\n";
+inline std::string rpl_welcome(const std::string& nick, const std::string& prefix = "") {
+	return ":server 001 " + nick + " :Welcome to the IRC server " + (prefix.empty() ? nick : prefix) + "\r\n";
 }
 
 inline std::string rpl_channelmodeis(const std::string& nick, const std::string& channel, const std::string& modes) {

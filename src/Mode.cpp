@@ -189,7 +189,7 @@ void    Server::handleMode(int fd, const std::vector<std::string>& params)
                 break ;
             default:
                 sendToClient(fd, err_unknownmode(nick, std::string(1, mode)));
-                return ;
+                continue ;
         }
     }
 

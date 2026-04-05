@@ -106,6 +106,6 @@ void Invite::executeInvite()
 	_server.sendToClient(_fd, rpl_inviting(getNickname(), _target, _channel));
 	
 	// Envoyer notification au target qu'il a été invité (message INVITE en IRC)
-	std::string message = ":" + getNickname() + " INVITE " + _target + " " + _channel + "\r\n";
+	std::string message = ":" + _server.getClient(_fd).getPrefix() + " INVITE " + _target + " " + _channel + "\r\n";
 	_server.sendToClient(targetFd, message);
 }

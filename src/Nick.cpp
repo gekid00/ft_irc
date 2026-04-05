@@ -65,5 +65,5 @@ void    Server::handleNick(int fd, const std::vector<std::string>& params)
     }
     _clients[fd].setNickname(nickname);
     if (_clients[fd].tryRegister())
-        sendToClient(fd, rpl_welcome(nickname));
+        sendToClient(fd, rpl_welcome(nickname, _clients[fd].getPrefix()));
 }
