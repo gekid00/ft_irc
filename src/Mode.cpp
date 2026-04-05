@@ -196,7 +196,7 @@ void    Server::handleMode(int fd, const std::vector<std::string>& params)
     if (appliedModes.empty())
         return ;
 
-    std::string msg = ":" + nick + " MODE " + targetChannel + " " + appliedModes + appliedArgs + "\r\n";
+    std::string msg = ":" + _clients[fd].getPrefix() + " MODE " + targetChannel + " " + appliedModes + appliedArgs + "\r\n";
     // Broadcast to all channel members, including author.
     channel.broadcastMessage(msg, -1);
 }
