@@ -1,65 +1,79 @@
+*This project has been created as part of the 42 curriculum by rbourkai, egerin.*
+
 # ft_irc
 
-An IRC server written in C++98 as part of the 42 curriculum.
-Implements non-blocking sockets with `poll()` multiplexing, supporting multiple clients,
-channels, operator privileges, and standard IRC commands.
+## Description
 
-## Technologies
+ft_irc is an IRC server written in C++98. The goal is to implement a functional IRC server that handles multiple simultaneous clients, channel management, operator privileges, and a subset of standard IRC commands — all using a single `poll()` call for non-blocking I/O multiplexing.
 
-- C++98
-- POSIX sockets (`socket`, `bind`, `listen`, `accept`)
-- `poll()` for I/O multiplexing
-- `fcntl()` for non-blocking file descriptors
+The server is compatible with standard IRC clients (irssi, weechat, HexChat).
 
-## Build
+## Instructions
 
-```
+**Compile:**
+```bash
 make
 ```
 
-## Usage
-
-```
+**Run:**
+```bash
 ./ircserv <port> <password>
 ```
 
-Connect with any IRC client or with `nc`:
-
+Example:
+```bash
+./ircserv 6667 mypassword
 ```
-nc localhost 6667
+
+**Connect with irssi:**
+```
+/connect 127.0.0.1 6667 mypassword
+/join #channel
+```
+
+**Connect with nc (testing):**
+```bash
+nc 127.0.0.1 6667
 PASS mypassword
 NICK alice
-USER alice 0 * :Alice User
+USER alice 0 * :Alice
 JOIN #lobby
-PRIVMSG #lobby :Hello everyone!
+PRIVMSG #lobby :hello
 QUIT
 ```
 
-Authentication must follow the order: `PASS`, `NICK`, `USER`.
+Authentication order is mandatory: `PASS` → `NICK` → `USER`.
 
 ## Supported Commands
 
 | Command | Description |
-|---------|-------------|
-| `PASS <password>` | Authenticate with the server password |
+|---|---|
+| `PASS <password>` | Server password (must be sent first) |
 | `NICK <nickname>` | Set or change nickname |
-| `USER <user> 0 * :<real>` | Set username and real name |
-| `JOIN <#channel>` | Join or create a channel |
-| `PRIVMSG <target> :<msg>` | Send a message to a channel or user |
-| `TOPIC <#channel> [:<topic>]` | View or set channel topic |
-| `KICK <#channel> <user> [:<reason>]` | Remove a user from a channel (operator) |
-| `INVITE <user> <#channel>` | Invite a user to a channel (operator) |
-| `MODE <#channel> <+\|-><flag> [arg]` | Change channel mode (operator) |
-| `QUIT` | Disconnect from the server |
+| `USER <user> 0 * :<realname>` | Set username |
+| `JOIN <#channel> [key]` | Join or create a channel |
+| `PART <#channel> [reason]` | Leave a channel |
+| `PRIVMSG <target> :<message>` | Send a message to a channel or user |
+| `TOPIC <#channel> [:<topic>]` | View or change channel topic |
+| `KICK <#channel> <nick> [:<reason>]` | Remove a user from a channel (op only) |
+| `INVITE <nick> <#channel>` | Invite a user (op only) |
+| `MODE <#channel> <+\|-><flag> [arg]` | Change channel mode (op only) |
+| `QUIT [:<reason>]` | Disconnect |
 
-### Mode Flags
+**MODE flags:**
 
-- `+i` / `-i` -- invite-only
-- `+t` / `-t` -- restrict TOPIC changes to operators
-- `+k` / `-k <password>` -- channel password
-- `+o` / `-o <user>` -- grant or revoke operator status
-- `+l` / `-l <limit>` -- set or remove user limit
+| Flag | Description |
+|---|---|
+| `+i` / `-i` | Invite-only |
+| `+t` / `-t` | Only operators can change topic |
+| `+k <key>` / `-k` | Channel password |
+| `+o <nick>` / `-o <nick>` | Grant / revoke operator |
+| `+l <n>` / `-l` | Set / remove user limit |
 
-## Authors
+## Resources
 
-rbourkai, egerin
+- [RFC 2812 — Internet Relay Chat: Client Protocol](https://datatracker.ietf.org/doc/html/rfc2812)
+- [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/)
+- [poll() man page](https://man7.org/linux/man-pages/man2/poll.2.html)
+
+AI (Claude) was used to help audit the code against the 42 evaluation criteria, fix bugs (use-after-free, missing PART command, incorrect error handling), implement the output buffer with POLLOUT mechanism for non-blocking writes, and add inline comments throughout the source files.

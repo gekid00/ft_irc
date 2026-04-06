@@ -81,9 +81,8 @@ void Topic::setTopic()
 		return;
 	}
 
-	// Appliquer le nouveau topic et notifier tout le channel
+	// Appliquer le nouveau topic et notifier tout le channel (y compris l'émetteur)
 	channel.setTopic(newTopic);
-	_server.sendToClient(_fd, rpl_topic(getNickname(), _channel, newTopic));
 	std::string msg = ":" + _server.getClient(_fd).getPrefix() + " TOPIC " + _channel + " :" + newTopic + "\r\n";
-	channel.broadcastMessage(msg, _fd, _server);
+	channel.broadcastMessage(msg, -1, _server);
 }
