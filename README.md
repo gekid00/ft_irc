@@ -76,4 +76,4 @@ Authentication order is mandatory: `PASS` → `NICK` → `USER`.
 - [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/)
 - [poll() man page](https://man7.org/linux/man-pages/man2/poll.2.html)
 
-AI (Claude) was used to help audit the code against the 42 evaluation criteria, fix bugs (use-after-free, missing PART command, incorrect error handling), implement the output buffer with POLLOUT mechanism for non-blocking writes, and add inline comments throughout the source files.
+AI (Claude) was used to help audit the code against bugs and documentation.
