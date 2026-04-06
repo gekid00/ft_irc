@@ -2,19 +2,18 @@
 #include "Server.hpp"
 #include "Replies.hpp"
 
-Privmsg::Privmsg(Server& server, int fd, const std::vector<std::string>& params) : _server(server), _fd(fd), _params(params)
+Privmsg::Privmsg(Server& server, int fd, const std::vector<std::string>& params)
+	: _server(server), _fd(fd), _params(params)
 {
-
 }
 
 Privmsg::~Privmsg()
 {
-
 }
 
 int Privmsg::execute()
 {
-	// Vérifier qu'on a au moins 2 paramètres (cible et message)
+	// Vérifier qu'on a une cible et un message
 	if (_params.size() < 2)
 	{
 		_server.sendToClient(_fd, err_needmoreparams(getNickname(), "PRIVMSG"));
@@ -22,13 +21,13 @@ int Privmsg::execute()
 	}
 
 	// Extraire la cible et le message
-	_target = _params[0];
+	_target  = _params[0];
 	_message = _params[1];
-	// Enlever le ':' du début du message si présent
+	// Supprimer le ':' du début si présent (paramètre trailing IRC)
 	if (!_message.empty() && _message[0] == ':')
 		_message = _message.substr(1);
 
-	// Valider que la cible existe et est accessible
+	// Valider la cible (channel ou user)
 	if (validateTarget() < 0)
 		return -1;
 
@@ -39,7 +38,7 @@ int Privmsg::execute()
 		return -1;
 	}
 
-	// Envoyer le message à la cible
+	// Envoyer le message
 	sendToTarget();
 	return 0;
 }
@@ -51,30 +50,27 @@ std::string Privmsg::getNickname()
 
 int Privmsg::validateTarget()
 {
-	// Si la cible est vide, erreur
 	if (_target.empty())
 	{
 		_server.sendToClient(_fd, err_norecipient(getNickname(), "PRIVMSG"));
 		return -1;
 	}
 
-	// Vérifier si c'est un channel (commence par # ou &)
 	if (_target[0] == '#' || _target[0] == '&')
 	{
-		// Format du channel invalide
+		// Cible = channel
 		if (!isValidChannel(_target))
 		{
 			_server.sendToClient(_fd, err_badchanmask(getNickname(), _target));
 			return -1;
 		}
-		// Vérifier que le channel existe sans le créer implicitement
 		Channel* channel = _server.findChannel(_target);
 		if (!channel)
 		{
 			_server.sendToClient(_fd, err_nosuchchannel(getNickname(), _target));
 			return -1;
 		}
-		// Vérifier que le client est membre du channel
+		// Doit être membre pour envoyer dans le channel
 		if (!channel->isMember(_fd))
 		{
 			_server.sendToClient(_fd, err_notonchannel(getNickname(), _target));
@@ -83,9 +79,8 @@ int Privmsg::validateTarget()
 	}
 	else
 	{
-		// Vérifier que le user cible existe
-		int targetFd = _server.getClientFdByNickname(_target);
-		if (targetFd < 0)
+		// Cible = utilisateur
+		if (_server.getClientFdByNickname(_target) < 0)
 		{
 			_server.sendToClient(_fd, err_nosuchnick(getNickname(), _target));
 			return -1;
@@ -96,35 +91,30 @@ int Privmsg::validateTarget()
 
 int Privmsg::validateMessage()
 {
-	// Vérifier que le message n'est pas vide
-	if (_message.empty())
-		return -1;
-	return 0;
+	return _message.empty() ? -1 : 0;
 }
 
 void Privmsg::sendToTarget()
 {
-	// Si c'est un channel, broadcaster à tous les membres sauf l'envoyeur
+	std::string prefix = _server.getClient(_fd).getPrefix();
+
 	if (_target[0] == '#' || _target[0] == '&')
 	{
+		// Channel : broadcaster à tous les membres sauf l'expéditeur
 		Channel& channel = _server.getChannel(_target);
-		// Construire le message au format IRC
-		std::string fullMessage = ":" + _server.getClient(_fd).getPrefix() + " PRIVMSG " + _target + " :" + _message + "\r\n";
-		// Envoyer à tous les membres sauf l'envoyeur
-		channel.broadcastMessage(fullMessage, _fd);
+		std::string msg = ":" + prefix + " PRIVMSG " + _target + " :" + _message + "\r\n";
+		channel.broadcastMessage(msg, _fd, _server);
 	}
 	else
 	{
-		// C'est un user, trouver le fd du user par son nickname
+		// Utilisateur : envoi direct
 		int targetFd = _server.getClientFdByNickname(_target);
 		if (targetFd < 0)
 		{
 			_server.sendToClient(_fd, err_nosuchnick(getNickname(), _target));
 			return;
 		}
-		// Construire le message au format IRC
-		std::string fullMessage = ":" + _server.getClient(_fd).getPrefix() + " PRIVMSG " + _target + " :" + _message + "\r\n";
-		// Envoyer au user cible
-		_server.sendToClient(targetFd, fullMessage);
+		std::string msg = ":" + prefix + " PRIVMSG " + _target + " :" + _message + "\r\n";
+		_server.sendToClient(targetFd, msg);
 	}
 }

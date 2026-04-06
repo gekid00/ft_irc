@@ -1,41 +1,37 @@
 #include "Channel.hpp"
-#include <sys/socket.h>
+#include "Server.hpp"
 
-Channel::Channel() : _name(""), _topic(""), _members(), _operators(), _invited(), _key(""), _userLimit(0), _inviteOnly(false), _topicRestricted(false)
+// Constructeur par défaut (requis par std::map)
+Channel::Channel() : _name(""), _topic(""), _key(""), _userLimit(0),
+	_inviteOnly(false), _topicRestricted(false)
 {
-
 }
 
-Channel::Channel(const std::string& name) : _name(name), _topic(""), _members(), _operators(), _invited(), _key(""), _userLimit(0), _inviteOnly(false), _topicRestricted(false)
+// Constructeur principal : initialise le channel avec son nom
+Channel::Channel(const std::string& name) : _name(name), _topic(""), _key(""),
+	_userLimit(0), _inviteOnly(false), _topicRestricted(false)
 {
-
 }
 
 Channel::~Channel()
 {
-
 }
 
-const std::string& Channel::getName() const
-{
-	return _name;
-}
+/* ===== NOM ===== */
 
-const std::string& Channel::getTopic() const
-{
-	return _topic;
-}
+const std::string& Channel::getName() const { return _name; }
 
-void Channel::setTopic(const std::string& topic)
-{
-	_topic = topic;
-}
+/* ===== TOPIC ===== */
 
-void Channel::addMember(int fd)
-{
-	_members.insert(fd);
-}
+const std::string& Channel::getTopic() const { return _topic; }
 
+void Channel::setTopic(const std::string& topic) { _topic = topic; }
+
+/* ===== MEMBRES ===== */
+
+void Channel::addMember(int fd) { _members.insert(fd); }
+
+// Retire le membre et ses privilèges (opérateur, invitation)
 void Channel::removeMember(int fd)
 {
 	_members.erase(fd);
@@ -43,105 +39,66 @@ void Channel::removeMember(int fd)
 	_invited.erase(fd);
 }
 
-bool Channel::isMember(int fd) const
-{
-	return _members.find(fd) != _members.end();
-}
+bool Channel::isMember(int fd) const { return _members.find(fd) != _members.end(); }
 
-int Channel::getNumberOfMembers() const
-{
-	return _members.size();
-}
+int Channel::getNumberOfMembers() const { return _members.size(); }
 
-const std::set<int>& Channel::getMembers() const
-{
-	return _members;
-}
+const std::set<int>& Channel::getMembers() const { return _members; }
 
+/* ===== OPERATEURS ===== */
+
+// Un client ne peut être opérateur que s'il est déjà membre
 void Channel::addOperator(int fd)
 {
 	if (isMember(fd))
 		_operators.insert(fd);
 }
 
-void Channel::removeOperator(int fd)
-{
-	_operators.erase(fd);
-}
+void Channel::removeOperator(int fd) { _operators.erase(fd); }
 
-bool Channel::isOperator(int fd) const
-{
-	return _operators.find(fd) != _operators.end();
-}
+bool Channel::isOperator(int fd) const { return _operators.find(fd) != _operators.end(); }
 
-void Channel::addInvited(int fd)
-{
-	_invited.insert(fd);
-}
+/* ===== INVITES (mode +i) ===== */
 
-void Channel::removeInvited(int fd)
-{
-	_invited.erase(fd);
-}
+void Channel::addInvited(int fd) { _invited.insert(fd); }
 
-bool Channel::isInvited(int fd) const
-{
-	return _invited.find(fd) != _invited.end();
-}
+void Channel::removeInvited(int fd) { _invited.erase(fd); }
 
-void Channel::setKey(const std::string& key)
-{
-	_key = key;
-}
+bool Channel::isInvited(int fd) const { return _invited.find(fd) != _invited.end(); }
 
-const std::string& Channel::getKey() const
-{
-	return _key;
-}
+/* ===== CLE (mode +k) ===== */
 
-bool Channel::isKeyRestricted() const
-{
-	return !_key.empty();
-}
+void Channel::setKey(const std::string& key) { _key = key; }
 
-void Channel::setUserLimit(int limit)
-{
-	_userLimit = limit;
-}
+const std::string& Channel::getKey() const { return _key; }
 
-int Channel::getUserLimit() const
-{
-	return _userLimit;
-}
+bool Channel::isKeyRestricted() const { return !_key.empty(); }
 
-bool Channel::isInviteOnly() const
-{
-	return _inviteOnly;
-}
+/* ===== LIMITE D'UTILISATEURS (mode +l) ===== */
 
-void Channel::setInviteOnly(bool flag)
-{
-	_inviteOnly = flag;
-}
+void Channel::setUserLimit(int limit) { _userLimit = limit; }
 
-bool Channel::isTopicRestricted() const
-{
-	return _topicRestricted;
-}
+int Channel::getUserLimit() const { return _userLimit; }
 
-void Channel::setTopicRestricted(bool flag)
-{
-	_topicRestricted = flag;
-}
+/* ===== MODES ===== */
 
-void Channel::broadcastMessage(const std::string& message, int senderFd) const
+bool Channel::isInviteOnly() const { return _inviteOnly; }
+void Channel::setInviteOnly(bool flag) { _inviteOnly = flag; }
+
+bool Channel::isTopicRestricted() const { return _topicRestricted; }
+void Channel::setTopicRestricted(bool flag) { _topicRestricted = flag; }
+
+/* ===== BROADCAST ===== */
+/*
+Envoie un message à tous les membres du channel sauf senderFd.
+Passe par Server::sendToClient() pour utiliser le buffer de sortie (POLLOUT),
+ce qui garantit que le serveur ne bloque pas si un client est suspendu (^Z).
+*/
+void Channel::broadcastMessage(const std::string& message, int senderFd, Server& server) const
 {
-    for (std::set<int>::const_iterator it = _members.begin(); it != _members.end(); ++it)
-    {
-        int memberFd = *it;
-        if (memberFd != senderFd)
-        {
-            send(memberFd, message.c_str(), message.size(), 0);
-        }
-    }
+	for (std::set<int>::const_iterator it = _members.begin(); it != _members.end(); ++it)
+	{
+		if (*it != senderFd)
+			server.sendToClient(*it, message);
+	}
 }

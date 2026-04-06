@@ -4,64 +4,69 @@
 #include <string>
 #include <set>
 
+// Déclaration anticipée pour éviter l'inclusion circulaire
+class Server;
+
 class Channel
 {
 	private:
-		std::string _name;
-		std::string _topic;
-		std::set<int> _members;
-		std::set<int> _operators;
-		std::set<int> _invited;
-		std::string _key;
-		int _userLimit;
-		bool _inviteOnly;
-		bool _topicRestricted;
+		std::string		_name;
+		std::string		_topic;
+		std::set<int>	_members;		// Fds de tous les membres
+		std::set<int>	_operators;		// Fds des opérateurs
+		std::set<int>	_invited;		// Fds des clients invités (mode +i)
+		std::string		_key;			// Mot de passe du channel (mode +k)
+		int				_userLimit;		// Limite de membres, 0 = illimité (mode +l)
+		bool			_inviteOnly;	// Mode +i
+		bool			_topicRestricted; // Mode +t
+
 	public:
 		Channel();
-		Channel(const std::string& name);  // Constructeur: initialise le channel avec un nom
-		~Channel();                         // Destructeur
+		Channel(const std::string& name);
+		~Channel();
 
-		/* Name */
-		const std::string& getName() const;  // Retourne le nom du channel (ex: "#general")
+		// Nom
+		const std::string&	getName() const;
 
-		/* Topic */
-		const std::string& getTopic() const;           // Retourne le topic du channel
-		void setTopic(const std::string& topic);       // Définit le topic du channel
+		// Topic
+		const std::string&	getTopic() const;
+		void				setTopic(const std::string& topic);
 
-		/* Members */
-		void addMember(int fd);                        // Ajoute un client au channel
-		void removeMember(int fd);                     // Retire un client du channel
-		bool isMember(int fd) const;                   // Vérifie si client est dans le channel
-		int getNumberOfMembers() const;                // Retourne le nombre total de membres
-		const std::set<int>& getMembers() const;       // Retourne l'ensemble de tous les fds membres
+		// Membres
+		void				addMember(int fd);
+		void				removeMember(int fd);
+		bool				isMember(int fd) const;
+		int					getNumberOfMembers() const;
+		const std::set<int>& getMembers() const;
 
-		/* Operators */
-		void addOperator(int fd);                      // Promeut un membre en opérateur
-		void removeOperator(int fd);                   // Rétrograde un opérateur en membre
-		bool isOperator(int fd) const;                 // Vérifie si le client est opérateur
+		// Opérateurs
+		void				addOperator(int fd);
+		void				removeOperator(int fd);
+		bool				isOperator(int fd) const;
 
-		/* Invited */
-		void addInvited(int fd);                       // Ajoute un client à la liste d'invités (mode +i)
-		void removeInvited(int fd);                    // Retire un client de la liste d'invités
-		bool isInvited(int fd) const;                  // Vérifie si le client est invité
+		// Invités (mode +i)
+		void				addInvited(int fd);
+		void				removeInvited(int fd);
+		bool				isInvited(int fd) const;
 
-		/* Key (Password) */
-		void setKey(const std::string& key);           // Définit le mot de passe (mode +k)
-		const std::string& getKey() const;             // Retourne le mot de passe
-		bool isKeyRestricted() const;                  // Vérifie si le channel a un mot de passe
-	
-		/* User Limit */
-		void setUserLimit(int limit);                  // Définit la limite de membres (mode +l), 0 = illimité
-		int getUserLimit() const;                      // Retourne la limite de membres
+		// Clé (mode +k)
+		void				setKey(const std::string& key);
+		const std::string&	getKey() const;
+		bool				isKeyRestricted() const;
 
-		/* Mode Flags */
-		bool isInviteOnly() const;                     // Vérifie si invite-only (mode +i)
-		bool isTopicRestricted() const;                // Vérifie si topic restreint (mode +t)
-		void setInviteOnly(bool flag);                 // Active/désactive le mode invite-only
-		void setTopicRestricted(bool flag);            // Active/désactive la restriction du topic
+		// Limite d'utilisateurs (mode +l)
+		void				setUserLimit(int limit);
+		int					getUserLimit() const;
 
-		/* Broadcasting */
-		void broadcastMessage(const std::string& message, int senderFd) const;  // Envoie un message à tous les membres
+		// Modes
+		bool				isInviteOnly() const;
+		bool				isTopicRestricted() const;
+		void				setInviteOnly(bool flag);
+		void				setTopicRestricted(bool flag);
+
+		// Envoi d'un message à tous les membres sauf senderFd (-1 = envoyer à tous)
+		// Passe par Server::sendToClient pour utiliser le buffer de sortie
+		void				broadcastMessage(const std::string& message, int senderFd, Server& server) const;
 };
 
 #endif
