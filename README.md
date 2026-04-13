@@ -85,9 +85,4 @@ The server reassembles partial data before processing any command.
 - [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/)
 - [poll() man page](https://man7.org/linux/man-pages/man2/poll.2.html)
 
-**AI usage:** Claude was used during this project for the following tasks:
-- Auditing the code against the 42 evaluation criteria (zero-grade triggers, poll usage, fcntl restrictions, errno rules)
-- Fixing bugs: use-after-free in the read loop, missing PART command, incorrect TOPIC broadcast, empty channel cleanup after KICK/PART/QUIT
-- Implementing the per-client output buffer with POLLOUT mechanism to handle suspended clients (`^Z` + flood scenario)
-- Refactoring `broadcastMessage` to route through the buffered `sendToClient` instead of calling `send()` directly
-- Adding inline comments across all source files to document each step
+**AI usage:** Claude was used during this project for debuging, documentation and comments.
