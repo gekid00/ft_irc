@@ -256,12 +256,10 @@ void Server::cleanupClient(int fd)
 	if (!hasClient(fd))
 		return;
 
-	// Vider le buffer de sortie avant de fermer (best-effort : envoi immédiat)
+	// Vider le buffer de sortie avant fermeture (best-effort, fd non-bloquant)
+	// Nécessaire car POLLOUT ne peut plus firer après la suppression du fd
 	if (_clients[fd].hasOutBuffer())
-	{
-		const std::string& buf = _clients[fd].getOutBuffer();
-		send(fd, buf.c_str(), buf.size(), 0);
-	}
+		send(fd, _clients[fd].getOutBuffer().c_str(), _clients[fd].getOutBuffer().size(), 0);
 
 	// Retirer le client de tous ses channels et supprimer les channels vides
 	std::vector<std::string> toRemove;
