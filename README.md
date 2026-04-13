@@ -50,7 +50,7 @@ Authentication order is mandatory: `PASS` → `NICK` → `USER`.
 |---|---|
 | `PASS <password>` | Server password (must be sent first) |
 | `NICK <nickname>` | Set or change nickname |
-| `USER <user> 0 * :<realname>` | Set username |
+| `USER <user> 0 * :<realname>` | Set username — `0` and `*` are legacy IRC fields (mode mask and unused param) that are always ignored by the server |
 | `JOIN <#channel> [key]` | Join or create a channel |
 | `PART <#channel> [reason]` | Leave a channel |
 | `PRIVMSG <target> :<message>` | Send a message to a channel or user |
