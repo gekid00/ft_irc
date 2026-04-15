@@ -120,9 +120,19 @@ void	play(t_game *g)
 			{
 				n = count_neighbors(g, row, col);
 				if (g->board[row][col] == 'O')
-					next[row][col] = (n == 2 || n == 3) ? 'O' : ' ';
+				{
+					if (n == 2 || n == 3)
+						next[row][col] = 'O';
+					else
+						next[row][col] = ' ';
+				}
 				else
-					next[row][col] = (n == 3) ? 'O' : ' ';
+				{
+					if (n == 3)
+						next[row][col] = 'O';
+					else
+						next[row][col] = ' ';
+				}
 				col++;
 			}
 			next[row][col] = '\0';
