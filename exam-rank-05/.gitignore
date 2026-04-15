@@ -1,0 +1,11 @@
+# Binaires compilés
+level0/bigint/bigint
+level0/bigint/*.o
+level0/polyset/polyset
+level0/polyset/*.o
+level0/vect2/vect2
+level0/vect2/*.o
+level1/BSQ/bsq
+level1/BSQ/*.o
+level1/Life/life
+level1/Life/*.o
