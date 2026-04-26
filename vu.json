@@ -1,0 +1,4 @@
+{
+  "_doc": "Hashes des offres déjà montrées au user. Format: {hash: {titre, entreprise, source, premiere_vue}}. Maintenu par Claude à chaque 'alors du nouveau ?'.",
+  "offres": {}
+}
