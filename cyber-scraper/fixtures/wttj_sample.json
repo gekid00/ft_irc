@@ -1,0 +1,32 @@
+[
+  {
+    "source": "wttj",
+    "titre": "Stage Pentest Web & Infrastructure",
+    "entreprise": "Synacktiv",
+    "url": "https://www.welcometothejungle.com/fr/companies/synacktiv/jobs/stage-pentest",
+    "localisation": "Paris 5e, 75",
+    "contrat": "stage",
+    "duree": "6 mois",
+    "description": "Tu rejoins l'équipe pentest pour des tests d'intrusion sur des applications web et infrastructures. Pratique du buffer overflow, exploitation et reverse engineering. Stack: C, Python, Linux, Bash."
+  },
+  {
+    "source": "wttj",
+    "titre": "Stage Red Team Operator",
+    "entreprise": "Akerva",
+    "url": "https://www.welcometothejungle.com/fr/companies/akerva/jobs/stage-red-team",
+    "localisation": "Paris 11e",
+    "contrat": "stage",
+    "duree": "6 mois",
+    "description": "Mission red team offensive sur clients grands comptes. Développement d'outils offensifs en Python et C++. Exploitation, vulnerability research."
+  },
+  {
+    "source": "wttj",
+    "titre": "Stage Audit Sécurité",
+    "entreprise": "Almond",
+    "url": "https://www.welcometothejungle.com/fr/companies/almond/jobs/stage-audit",
+    "localisation": "Paris 9e",
+    "contrat": "stage",
+    "duree": "6 mois",
+    "description": "Stage audit sécurité, vulnerability assessment, tests de pénétration sur applications web. Python, Linux."
+  }
+]
