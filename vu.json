@@ -1,4 +1,47 @@
 {
-  "_doc": "Hashes des offres déjà montrées au user. Format: {hash: {titre, entreprise, source, premiere_vue}}. Maintenu par Claude à chaque 'alors du nouveau ?'.",
-  "offres": {}
+  "_doc": "Offres déjà montrées au user. Maintenu par Claude à chaque 'alors du nouveau ?'.",
+  "offres": {
+    "synacktiv-book-stages-2026": {
+      "titre": "8 stages au choix (pentest, reverse, dev offensif, exploit vulns)",
+      "entreprise": "Synacktiv",
+      "source": "synacktiv.com",
+      "url": "https://www.synacktiv.com/book_stage_synacktiv.pdf",
+      "premiere_vue": "2026-04-26"
+    },
+    "synacktiv-stage-recherche-exploit-vulns": {
+      "titre": "Stage recherche et exploitation de vulnérabilités",
+      "entreprise": "Synacktiv",
+      "source": "synacktiv.com",
+      "url": "https://www.synacktiv.com/stage-recherche-et-exploitation-de-vulnerabilites",
+      "premiere_vue": "2026-04-26"
+    },
+    "comcyber-pentester-red-team-stage": {
+      "titre": "Pentester RED TEAM expérimenté en cyber offensif (stage, statut militaire)",
+      "entreprise": "COMCYBER",
+      "source": "wttj",
+      "url": "https://www.welcometothejungle.com/fr/companies/commandement-de-la-cyberdefense-comcyber/jobs/pentester-red-team-experimente-en-cyber-offensif-h-f-statut-militaire_paris",
+      "premiere_vue": "2026-04-26"
+    },
+    "akerva-stage-audit-securite": {
+      "titre": "Stage fin d'études audit sécurité (pentest, code audit, archi)",
+      "entreprise": "Akerva",
+      "source": "indeed/web",
+      "url": "https://akerva.com/rejoignez-nous/",
+      "premiere_vue": "2026-04-26"
+    },
+    "bagourd-stage-pentest-paris": {
+      "titre": "Stage Pentest Paris H/F",
+      "entreprise": "Bagourd",
+      "source": "yeswehack-jobs",
+      "url": "https://jobs.yeswehack.com/job/pentesting/bagourd-stage-pentest-paris-h-f",
+      "premiere_vue": "2026-04-26"
+    },
+    "headmind-consultant-securite-offensive": {
+      "titre": "STAGE Consultant Sécurité Offensive H/F",
+      "entreprise": "HeadMind Partners",
+      "source": "wttj/indeed",
+      "url": "https://fr.indeed.com/q-stage-pentest-l-paris-(75)-emplois.html",
+      "premiere_vue": "2026-04-26"
+    }
+  }
 }
