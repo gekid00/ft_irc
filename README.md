@@ -8,6 +8,15 @@ ft_irc is an IRC server written in C++98. The goal is to implement a functional 
 
 The server is compatible with standard IRC clients (irssi, weechat, HexChat).
 
+## Team & my contribution
+
+Pair project with **egerin** (42 Paris). We split the server into network layer and command handling.
+
+- **Command parsing (my part):** splitting incoming IRC messages into prefix, command and parameters, and dispatching them to the right handler.
+- **Registration:** `PASS`, `NICK`, `USER` and the client registration flow.
+- **Commands & channels:** `JOIN`, `PART`, `PRIVMSG`, `KICK`, `INVITE`, `TOPIC`, `MODE` (operator privileges, `i`/`t`/`k`/`o`/`l` modes) and channel state.
+- **Debugging (shared):** we both worked across the code to pass the evaluation edge cases with real clients (irssi, `nc`).
+
 ## Instructions
 
 **Compile:**
